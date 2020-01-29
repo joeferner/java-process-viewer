@@ -1,0 +1,42 @@
+{
+  "name": "java-process-viewer",
+  "version": "0.0.1",
+  "description": "Java Process Viewer",
+  "private": true,
+  "main": "target/index.js",
+  "keywords": [
+    "kicad"
+  ],
+  "author": "Joe Ferner <joe@fernsroth.com>",
+  "license": "MIT",
+  "scripts": {
+    "server:watch": "nodemon",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "tslint --fix -p tsconfig.json",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion": "npm run lint",
+    "version": "npm run format && git add -A src",
+    "postversion": "git push && git push --tags"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "yargs": "^15.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.2",
+    "@types/express-session": "^1.15.16",
+    "@types/node": "^13.1.8",
+    "@types/yargs": "^15.0.0",
+    "jest": "^24.9.0",
+    "nodemon": "^2.0.2",
+    "prettier": "^1.19.1",
+    "ts-jest": "^24.3.0",
+    "ts-node": "^8.6.2",
+    "tslint": "^5.20.1",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.7.5"
+  }
+}
