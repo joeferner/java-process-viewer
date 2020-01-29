@@ -4,6 +4,7 @@ import {Process} from './models';
 import {makeStyles} from "@material-ui/core/styles";
 import {center} from "./styles";
 import {getProcessList} from "./data";
+import {useHistory} from 'react-router-dom';
 
 const useStyles = makeStyles({
     loading: {
@@ -23,11 +24,16 @@ const useStyles = makeStyles({
 
     noProcessesFoundCell: {
         border: 0
+    },
+
+    row: {
+        cursor: 'pointer'
     }
 });
 
-export function Home() {
+export function ProcessList() {
     const classes = useStyles();
+    const history = useHistory();
     const [loading, setLoading] = React.useState<boolean>(true);
     const [error, setError] = React.useState<boolean>(false);
     const [processes, setProcesses] = React.useState<Process[] | undefined>(undefined);
@@ -36,16 +42,18 @@ export function Home() {
         try {
             setError(false);
             setLoading(true);
-            console.log('a');
             const processList = await getProcessList();
-            console.log('b');
-            setProcesses(processList);
+            setProcesses(processList.processes);
         } catch (err) {
             console.error('failed to load process list', err);
             setError(true);
         } finally {
             setLoading(false);
         }
+    }, []);
+
+    const handleClick = React.useCallback((row: Process) => {
+        history.push(`/pid/${row.pid}`);
     }, []);
 
     React.useEffect(() => {
@@ -80,7 +88,8 @@ export function Home() {
                                 Found</TableCell>
                         </TableRow>)
                         : processes.map(row => (
-                            <TableRow key={row.name}>
+                            <TableRow className={classes.row} hover key={row.pid} role="checkbox"
+                                      onClick={() => handleClick(row)}>
                                 <TableCell component="th" scope="row">
                                     {row.name}
                                 </TableCell>

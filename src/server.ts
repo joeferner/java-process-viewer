@@ -1,8 +1,13 @@
 import express, {Request, Response} from 'express';
 import path from 'path';
+import {execPromise} from "./utils";
+import {NextFunction} from "express-serve-static-core";
+import {parseJps} from "jps-parser/target";
+
 
 export interface StartOptions {
     port: number;
+    jpsCommand: string;
 }
 
 export function start(options: StartOptions) {
@@ -26,8 +31,14 @@ export function start(options: StartOptions) {
     app.listen(port, () => {
         console.log(`listening http://localhost:${port}`);
     });
-}
 
-function getProcesses(req: Request, res: Response) {
-    res.send([]);
+    async function getProcesses(req: Request, res: Response, next: NextFunction) {
+        try {
+            const rawResults = await execPromise(options.jpsCommand);
+            const results = parseJps(rawResults.stdout, rawResults.stderr);
+            res.send(results);
+        } catch (err) {
+            next(err);
+        }
+    }
 }
