@@ -1,35 +1,40 @@
 import React from 'react';
-import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@material-ui/core';
-import {Process} from './models';
-import {makeStyles} from "@material-ui/core/styles";
-import {center} from "./styles";
-import {getProcessList} from "./data";
-import {useHistory} from 'react-router-dom';
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
+import { Process } from './models';
+import { makeStyles } from '@material-ui/core/styles';
+import { center } from './styles';
+import { getProcessList } from './data';
+import { useHistory } from 'react-router-dom';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
     loading: {
-        ...center({width: 300, height: 300, centerContent: true})
+        ...center({ width: 300, height: 300, centerContent: true }),
     },
 
     content: {
-        ...center({width: 300, height: 450}),
-        display: 'flex'
+        ...center({ width: 300, height: 450 }),
+        display: 'flex',
     },
 
     tableContainer: {
-        flexGrow: 1
+        flexGrow: 1,
     },
 
     table: {},
 
+    tableHeaderCell: {
+        backgroundColor: theme.palette.common.black,
+        color: theme.palette.common.white,
+    },
+
     noProcessesFoundCell: {
-        border: 0
+        border: 0,
     },
 
     row: {
-        cursor: 'pointer'
-    }
-});
+        cursor: 'pointer',
+    },
+}));
 
 export function ProcessList() {
     const classes = useStyles();
@@ -77,8 +82,8 @@ export function ProcessList() {
             <Table className={classes.table} aria-label="simple table">
                 <TableHead>
                     <TableRow>
-                        <TableCell>Name</TableCell>
-                        <TableCell align="right">PID</TableCell>
+                        <TableCell className={classes.tableHeaderCell}>Name</TableCell>
+                        <TableCell className={classes.tableHeaderCell} align="right">PID</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
