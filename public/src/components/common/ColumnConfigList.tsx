@@ -46,13 +46,14 @@ export function ColumnConfigList(props: ColumnConfigListProps) {
             return;
         }
 
+        console.log(columns, result.source.index, result.destination.index);
         const newList = reorder(
             columns,
             result.source.index,
             result.destination.index,
         );
         props.onColumnsChange(newList);
-    }, []);
+    }, [columns]);
 
     return (<DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="droppable">
@@ -65,15 +66,14 @@ export function ColumnConfigList(props: ColumnConfigListProps) {
                                 draggableId={column.id}
                                 index={index}
                             >
-                                {(provided) => (
-                                    <ListItem
-                                        key={column.id}
-                                        ContainerComponent="li"
-                                        ContainerProps={{
+                                {(provided) => {
+                                    const listItemProps = {
+                                        ContainerProps: {
                                             ref: provided.innerRef,
                                             ...provided.draggableProps,
-                                        }}
-                                    >
+                                        },
+                                    };
+                                    return (<ListItem key={column.id} {...listItemProps}>
                                         <ListItemIcon>
                                             <Checkbox
                                                 checked={'visible' in column ? column.visible : true}
@@ -84,8 +84,8 @@ export function ColumnConfigList(props: ColumnConfigListProps) {
                                         <ListItemSecondaryAction {...provided.dragHandleProps}>
                                             <ReorderIcon color="disabled"/>
                                         </ListItemSecondaryAction>
-                                    </ListItem>
-                                )}
+                                    </ListItem>);
+                                }}
                             </Draggable>
                         ))}
                         {droppableProvided.placeholder}

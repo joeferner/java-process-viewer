@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
     detailsIcon: {
         transitionDuration: theme.transitions.duration.standard,
         transitionProperty: 'transform',
-    },
+    } as any,
     detailsIconExpanded: {
         transform: 'rotate(90deg)',
     },
@@ -131,5 +131,7 @@ export function ConfigurableTableRow(props: ConfigurableTableRowProps) {
         </TableRow>));
     }
 
-    return results;
+    return (<React.Fragment>
+        {results}
+    </React.Fragment>);
 }

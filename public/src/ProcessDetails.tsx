@@ -3,6 +3,7 @@ import { ConfigurableTable, SortDirection } from './components/common/Configurab
 import { Column } from './components/common/Column';
 import { getProcessDetails } from './data';
 import { makeStyles } from '@material-ui/core';
+import { ThreadDetails } from './ThreadDetails';
 
 const useStyles = makeStyles(theme => ({
     table: {
@@ -11,9 +12,6 @@ const useStyles = makeStyles(theme => ({
     },
     tableContainer: {
         height: `calc(100vh - 70px)`,
-    },
-    details: {
-        padding: '16px',
     },
 }));
 
@@ -57,7 +55,7 @@ export function ProcessDetails(props: ProcessDetailsProps) {
     };
 
     const handleRenderDetails = React.useCallback((row) => {
-        return (<div className={classes.details}>{row.name}</div>);
+        return (<ThreadDetails thread={row}/>);
     }, []);
 
     useEffect(() => {

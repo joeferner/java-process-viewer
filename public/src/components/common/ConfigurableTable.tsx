@@ -8,6 +8,7 @@ import { Column } from './Column';
 import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import { ConfigurableTableRow } from './ConfigurableTableRow';
 import { Row } from './Row';
+import clsx from 'clsx';
 
 const useStyles = makeStyles(theme => ({
     tableHeaderCell: {
@@ -124,16 +125,12 @@ export function ConfigurableTable(props: ConfigurableTableProps) {
                             </TableCell>
                         ))}
                         <TableCell
-                            className={`${classes.tableHeaderCell} ${
-                                classes.tableHeaderCellConfigColumns
-                            }`}
-                        >
+                            className={clsx(classes.tableHeaderCell, classes.tableHeaderCellConfigColumns)}>
                             <IconButton
-                                color="primary"
                                 className={classes.tableHeaderCellConfigColumnsButton}
                                 onClick={() => setShowColumnsConfig(true)}
                             >
-                                <ViewColumnIcon color="primary"/>
+                                <ViewColumnIcon color="primary" style={{ color: '#eee' }}/>
                             </IconButton>
                         </TableCell>
                     </TableRow>
