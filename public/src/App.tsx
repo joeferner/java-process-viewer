@@ -36,26 +36,28 @@ export function App() {
         setDrawerOpen(false);
     }, []);
 
-    return (<HashRouter>
-        <AppBar position="relative">
-            <Toolbar className={classes.toolbar}>
-                <IconButton
-                    color="inherit"
-                    aria-label="open drawer"
-                    onClick={handleDrawerOpen}
-                    edge="start"
-                    className={classes.menuButton}
-                >
-                    <MenuIcon/>
-                </IconButton>
-                <Typography variant="h6" color="inherit" noWrap className={classes.toolbarTitle}>
-                    Java Process Viewer
-                </Typography>
-            </Toolbar>
-            <AppDrawer drawerOpen={drawerOpen} handleDrawerClose={handleDrawerClose}/>
-        </AppBar>
+    return (
+        <HashRouter>
+            <AppBar position="relative">
+                <Toolbar className={classes.toolbar}>
+                    <IconButton
+                        color="inherit"
+                        aria-label="open drawer"
+                        onClick={handleDrawerOpen}
+                        edge="start"
+                        className={classes.menuButton}
+                    >
+                        <MenuIcon />
+                    </IconButton>
+                    <Typography variant="h6" color="inherit" noWrap className={classes.toolbarTitle}>
+                        Java Process Viewer
+                    </Typography>
+                </Toolbar>
+                <AppDrawer drawerOpen={drawerOpen} handleDrawerClose={handleDrawerClose} />
+            </AppBar>
 
-        <Route exact path="/" component={ProcessList}/>
-        <Route path="/pid/:pid" component={ProcessDetails}/>
-    </HashRouter>);
+            <Route exact path="/" component={ProcessList} />
+            <Route path="/pid/:pid" component={ProcessDetails} />
+        </HashRouter>
+    );
 }

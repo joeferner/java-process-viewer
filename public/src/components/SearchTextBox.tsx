@@ -9,20 +9,22 @@ export interface SearchTextBoxProps {
 }
 
 export function SearchTextBox(props: SearchTextBoxProps) {
-    return (<TextField
-        className={props.className}
-        type={'search'}
-        value={props.value}
-        placeholder={'Search'}
-        onChange={(evt) => props.onChange(evt.target.value)}
-        InputProps={{
-            startAdornment: (
-                <InputAdornment position="start">
-                    <Tooltip title={'Search'}>
-                        <SearchIcon/>
-                    </Tooltip>
-                </InputAdornment>
-            ),
-        }}
-    />);
+    return (
+        <TextField
+            className={props.className}
+            type={'search'}
+            value={props.value}
+            placeholder={'Search'}
+            onChange={evt => props.onChange(evt.target.value)}
+            InputProps={{
+                startAdornment: (
+                    <InputAdornment position="start">
+                        <Tooltip title={'Search'}>
+                            <SearchIcon />
+                        </Tooltip>
+                    </InputAdornment>
+                ),
+            }}
+        />
+    );
 }

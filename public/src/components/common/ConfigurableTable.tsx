@@ -104,7 +104,7 @@ function _ConfigurableTable(props: ConfigurableTableProps) {
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead>
                         <TableRow>
-                            <TableCell className={classes.tableHeaderCell}/>
+                            <TableCell className={classes.tableHeaderCell} />
                             {filteredColumns.map(column => (
                                 <TableCell
                                     key={column.id}
@@ -122,9 +122,9 @@ function _ConfigurableTable(props: ConfigurableTableProps) {
                                         {column.label}
                                         {props.sortColumnId === column.id ? (
                                             props.sortDirection === SortDirection.ASCENDING ? (
-                                                <ArrowDropDownIcon/>
+                                                <ArrowDropDownIcon />
                                             ) : (
-                                                <ArrowDropUpIcon/>
+                                                <ArrowDropUpIcon />
                                             )
                                         ) : null}
                                     </div>
@@ -135,7 +135,7 @@ function _ConfigurableTable(props: ConfigurableTableProps) {
                                     className={classes.tableHeaderCellConfigColumnsButton}
                                     onClick={() => setShowColumnsConfig(true)}
                                 >
-                                    <ViewColumnIcon color="primary" style={{ color: '#eee' }}/>
+                                    <ViewColumnIcon color="primary" style={{ color: '#eee' }} />
                                 </IconButton>
                             </TableCell>
                         </TableRow>

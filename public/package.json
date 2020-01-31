@@ -4,7 +4,7 @@
   "description": "Java Process Viewer - Public",
   "private": true,
   "keywords": [
-    "kicad"
+    "java"
   ],
   "author": "Joe Ferner <joe@fernsroth.com>",
   "license": "MIT",
@@ -16,7 +16,8 @@
     "test": "jest --config jestconfig.json",
     "test:watch": "jest --watchAll --config jestconfig.json",
     "prepare": "npm run build",
-    "prepublishOnly": "npm test && npm run lint"
+    "prepublishOnly": "npm test && npm run precommit",
+    "precommit": "npm run format && npm run lint"
   },
   "dependencies": {
     "@material-ui/core": "^4.8.3",
