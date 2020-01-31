@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
-import { ConfigurableTable, SortDirection } from './components/common/ConfigurableTable';
-import { Column } from './components/common/Column';
-import { getProcessDetails } from './data';
 import { makeStyles } from '@material-ui/core';
+import React, { useEffect } from 'react';
+import { Column } from './components/common/Column';
+import { ConfigurableTable, SortDirection } from './components/common/ConfigurableTable';
+import { getProcessDetails } from './data';
 import { ThreadDetails } from './ThreadDetails';
 
 const useStyles = makeStyles(theme => ({
@@ -30,9 +30,9 @@ const initialColumns: Column[] = [
 export interface ProcessDetailsProps {
     match: {
         params: {
-            pid: string
-        }
-    }
+            pid: string;
+        };
+    };
 }
 
 export function ProcessDetails(props: ProcessDetailsProps) {
@@ -54,26 +54,28 @@ export function ProcessDetails(props: ProcessDetailsProps) {
         setRows(newRows);
     };
 
-    const handleRenderDetails = React.useCallback((row) => {
-        return (<ThreadDetails thread={row}/>);
+    const handleRenderDetails = React.useCallback(row => {
+        return <ThreadDetails thread={row} />;
     }, []);
 
     useEffect(() => {
         refresh();
     }, [pid]);
 
-    return (<ConfigurableTable
-        className={classes.table}
-        containerClassName={classes.tableContainer}
-        rows={rows}
-        columns={columns}
-        sortColumnId={sortColumnId}
-        sortDirection={sortDirection}
-        onSetColumns={(newColumns) => setColumns(newColumns)}
-        onSortChange={(newSortColumnId, newSortDirection) => {
-            setSortColumnId(newSortColumnId);
-            setSortDirection(newSortDirection);
-        }}
-        renderDetails={handleRenderDetails}
-    />);
+    return (
+        <ConfigurableTable
+            className={classes.table}
+            containerClassName={classes.tableContainer}
+            rows={rows}
+            columns={columns}
+            sortColumnId={sortColumnId}
+            sortDirection={sortDirection}
+            onSetColumns={newColumns => setColumns(newColumns)}
+            onSortChange={(newSortColumnId, newSortDirection) => {
+                setSortColumnId(newSortColumnId);
+                setSortDirection(newSortDirection);
+            }}
+            renderDetails={handleRenderDetails}
+        />
+    );
 }

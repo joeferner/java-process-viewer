@@ -2,9 +2,9 @@ import { AppBar, IconButton, makeStyles, Toolbar, Typography } from '@material-u
 import MenuIcon from '@material-ui/icons/Menu';
 import React from 'react';
 import { HashRouter, Route } from 'react-router-dom';
-import { ProcessList } from './ProcessList';
-import { ProcessDetails } from './ProcessDetails';
 import { AppDrawer } from './AppDrawer';
+import { ProcessDetails } from './ProcessDetails';
+import { ProcessList } from './ProcessList';
 
 const useStyles = makeStyles(theme => ({
     toolbar: {
@@ -47,17 +47,17 @@ export function App() {
                         edge="start"
                         className={classes.menuButton}
                     >
-                        <MenuIcon/>
+                        <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" color="inherit" noWrap className={classes.toolbarTitle}>
                         Java Process Viewer
                     </Typography>
                 </Toolbar>
-                <AppDrawer drawerOpen={drawerOpen} handleDrawerClose={handleDrawerClose}/>
+                <AppDrawer drawerOpen={drawerOpen} handleDrawerClose={handleDrawerClose} />
             </AppBar>
 
-            <Route exact path="/" component={ProcessList}/>
-            <Route path="/pid/:pid" component={ProcessDetails}/>
+            <Route exact path="/" component={ProcessList} />
+            <Route path="/pid/:pid" component={ProcessDetails} />
         </HashRouter>
     );
 }

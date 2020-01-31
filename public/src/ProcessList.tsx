@@ -1,12 +1,12 @@
-import React from 'react';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
-import { Process } from './models';
 import { makeStyles } from '@material-ui/core/styles';
-import { center } from './styles';
-import { getProcessList } from './data';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
+import { getProcessList } from './data';
+import { Process } from './models';
+import { center } from './styles';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
     loading: {
         ...center({ width: 300, height: 300, centerContent: true }),
     },
@@ -66,43 +66,67 @@ export function ProcessList() {
     }, []);
 
     if (loading && !processes) {
-        return (<Paper elevation={3} className={classes.loading}>Loading...</Paper>);
+        return (
+            <Paper elevation={3} className={classes.loading}>
+                Loading...
+            </Paper>
+        );
     }
 
     if (error) {
-        return (<Paper elevation={3} className={classes.loading}>Error Loading Processes</Paper>);
+        return (
+            <Paper elevation={3} className={classes.loading}>
+                Error Loading Processes
+            </Paper>
+        );
     }
 
     if (!processes) {
-        return (<Paper elevation={3} className={classes.loading}>Could not find processes</Paper>);
+        return (
+            <Paper elevation={3} className={classes.loading}>
+                Could not find processes
+            </Paper>
+        );
     }
 
-    return (<Paper elevation={3} className={classes.content}>
-        <TableContainer className={classes.tableContainer}>
-            <Table className={classes.table} aria-label="simple table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell className={classes.tableHeaderCell}>Name</TableCell>
-                        <TableCell className={classes.tableHeaderCell} align="right">PID</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {processes.length === 0
-                        ? (<TableRow>
-                            <TableCell colSpan={2} className={classes.noProcessesFoundCell}>No Java Processes
-                                Found</TableCell>
-                        </TableRow>)
-                        : processes.map(row => (
-                            <TableRow className={classes.row} hover key={row.pid} role="checkbox"
-                                      onClick={() => handleClick(row)}>
-                                <TableCell component="th" scope="row">
-                                    {row.name}
+    return (
+        <Paper elevation={3} className={classes.content}>
+            <TableContainer className={classes.tableContainer}>
+                <Table className={classes.table} aria-label="simple table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell className={classes.tableHeaderCell}>Name</TableCell>
+                            <TableCell className={classes.tableHeaderCell} align="right">
+                                PID
+                            </TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {processes.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={2} className={classes.noProcessesFoundCell}>
+                                    No Java Processes Found
                                 </TableCell>
-                                <TableCell align="right">{row.pid}</TableCell>
                             </TableRow>
-                        ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
-    </Paper>);
+                        ) : (
+                            processes.map(row => (
+                                <TableRow
+                                    className={classes.row}
+                                    hover
+                                    key={row.pid}
+                                    role="checkbox"
+                                    onClick={() => handleClick(row)}
+                                >
+                                    <TableCell component="th" scope="row">
+                                        {row.name}
+                                    </TableCell>
+                                    <TableCell align="right">{row.pid}</TableCell>
+                                </TableRow>
+                            ))
+                        )}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </Paper>
+    );
 }

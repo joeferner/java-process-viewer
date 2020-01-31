@@ -1,14 +1,14 @@
-import React, { useEffect } from 'react';
+import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
-import { ColumnConfigDialog } from './ColumnConfigDialog';
 import ViewColumnIcon from '@material-ui/icons/ViewColumn';
+import clsx from 'clsx';
+import React, { useEffect } from 'react';
 import { Column } from './Column';
-import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
+import { ColumnConfigDialog } from './ColumnConfigDialog';
 import { ConfigurableTableRow } from './ConfigurableTableRow';
 import { Row } from './Row';
-import clsx from 'clsx';
 
 const useStyles = makeStyles(theme => ({
     tableHeaderCell: {
@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
 
 export enum SortDirection {
     ASCENDING = 'ASCENDING',
-    DESCENDING = 'DESCENDING'
+    DESCENDING = 'DESCENDING',
 }
 
 export interface ConfigurableTableProps {
@@ -67,85 +67,93 @@ export function ConfigurableTable(props: ConfigurableTableProps) {
         setRows(newRows);
     }, [props.rows, props.columns, props.sortColumnId, props.sortDirection]);
 
-    const handleColumnClick = React.useCallback((column: Column) => {
-        if (props.sortColumnId === column.id) {
-            doSetSortDirection(props.sortDirection === SortDirection.ASCENDING ? SortDirection.DESCENDING : SortDirection.ASCENDING);
-        } else {
-            doSetSort(column.id);
-        }
+    const handleColumnClick = React.useCallback(
+        (column: Column) => {
+            if (props.sortColumnId === column.id) {
+                doSetSortDirection(
+                    props.sortDirection === SortDirection.ASCENDING
+                        ? SortDirection.DESCENDING
+                        : SortDirection.ASCENDING,
+                );
+            } else {
+                doSetSort(column.id);
+            }
 
-        function doSetSortDirection(dir: SortDirection) {
-            props.onSortChange(props.sortColumnId, dir);
-        }
+            function doSetSortDirection(dir: SortDirection) {
+                props.onSortChange(props.sortColumnId, dir);
+            }
 
-        function doSetSort(columnId: string) {
-            props.onSortChange(columnId, props.sortDirection);
-        }
-    }, [props.sortColumnId, props.sortDirection, props.columns, props.onSortChange]);
-
-    const filteredColumns = props.columns.filter(
-        column => (('visible' in column) ? column.visible : true),
+            function doSetSort(columnId: string) {
+                props.onSortChange(columnId, props.sortDirection);
+            }
+        },
+        [props.sortColumnId, props.sortDirection, props.columns, props.onSortChange],
     );
-    return (<Paper className={props.className}>
-        <ColumnConfigDialog
-            onClose={() => setShowColumnsConfig(false)}
-            open={showColumnsConfig}
-            columns={props.columns}
-            onColumnsChange={newColumns => props.onSetColumns(newColumns)}
-        />
 
-        <TableContainer className={props.containerClassName}>
-            <Table stickyHeader aria-label="sticky table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell className={classes.tableHeaderCell}/>
-                        {filteredColumns.map((column) => (
-                            <TableCell
-                                key={column.id}
-                                align={column.align}
-                                style={{ minWidth: column.minWidth }}
-                                className={classes.tableHeaderCell}
-                                onClick={() => handleColumnClick(column)}
-                            >
-                                <div
-                                    style={{
-                                        display: 'flex',
-                                        justifyContent: column.align === 'right' ? 'end' : 'start',
-                                    }}
+    const filteredColumns = props.columns.filter(column => ('visible' in column ? column.visible : true));
+    return (
+        <Paper className={props.className}>
+            <ColumnConfigDialog
+                onClose={() => setShowColumnsConfig(false)}
+                open={showColumnsConfig}
+                columns={props.columns}
+                onColumnsChange={newColumns => props.onSetColumns(newColumns)}
+            />
+
+            <TableContainer className={props.containerClassName}>
+                <Table stickyHeader aria-label="sticky table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell className={classes.tableHeaderCell} />
+                            {filteredColumns.map(column => (
+                                <TableCell
+                                    key={column.id}
+                                    align={column.align}
+                                    style={{ minWidth: column.minWidth }}
+                                    className={classes.tableHeaderCell}
+                                    onClick={() => handleColumnClick(column)}
                                 >
-                                    {column.label}
-                                    {props.sortColumnId === column.id ? (
-                                        props.sortDirection === SortDirection.ASCENDING ? (
-                                            <ArrowDropDownIcon/>
-                                        ) : (
-                                            <ArrowDropUpIcon/>
-                                        )
-                                    ) : null}
-                                </div>
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: column.align === 'right' ? 'end' : 'start',
+                                        }}
+                                    >
+                                        {column.label}
+                                        {props.sortColumnId === column.id ? (
+                                            props.sortDirection === SortDirection.ASCENDING ? (
+                                                <ArrowDropDownIcon />
+                                            ) : (
+                                                <ArrowDropUpIcon />
+                                            )
+                                        ) : null}
+                                    </div>
+                                </TableCell>
+                            ))}
+                            <TableCell className={clsx(classes.tableHeaderCell, classes.tableHeaderCellConfigColumns)}>
+                                <IconButton
+                                    className={classes.tableHeaderCellConfigColumnsButton}
+                                    onClick={() => setShowColumnsConfig(true)}
+                                >
+                                    <ViewColumnIcon color="primary" style={{ color: '#eee' }} />
+                                </IconButton>
                             </TableCell>
-                        ))}
-                        <TableCell
-                            className={clsx(classes.tableHeaderCell, classes.tableHeaderCellConfigColumns)}>
-                            <IconButton
-                                className={classes.tableHeaderCellConfigColumnsButton}
-                                onClick={() => setShowColumnsConfig(true)}
-                            >
-                                <ViewColumnIcon color="primary" style={{ color: '#eee' }}/>
-                            </IconButton>
-                        </TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {rows.map(row => {
-                        return (<ConfigurableTableRow
-                            key={row.id}
-                            row={row}
-                            columns={filteredColumns}
-                            renderDetails={(r) => props.renderDetails(r)}
-                        />);
-                    })}
-                </TableBody>
-            </Table>
-        </TableContainer>
-    </Paper>);
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {rows.map(row => {
+                            return (
+                                <ConfigurableTableRow
+                                    key={row.id}
+                                    row={row}
+                                    columns={filteredColumns}
+                                    renderDetails={r => props.renderDetails(r)}
+                                />
+                            );
+                        })}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </Paper>
+    );
 }

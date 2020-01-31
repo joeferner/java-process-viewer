@@ -1,6 +1,6 @@
-import { Process } from './models';
 import axios from 'axios';
 import { ParseResults as JStackParseResults } from 'jstack-parser/src/index';
+import { Process } from './models';
 
 export interface ProcessListResults {
     processes: Process[];

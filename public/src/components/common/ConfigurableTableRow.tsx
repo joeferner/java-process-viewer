@@ -1,9 +1,9 @@
 import { Collapse, IconButton, TableCell, TableRow } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import clsx from 'clsx';
 import React from 'react';
 import { Column } from './Column';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { makeStyles } from '@material-ui/core/styles';
-import clsx from 'clsx';
 
 const useStyles = makeStyles(theme => ({
     detailsButton: {
@@ -88,50 +88,48 @@ export function ConfigurableTableRow(props: ConfigurableTableRowProps) {
         }, 200);
     };
 
-    const detailsIconClassName = clsx(classes.detailsIcon,
-        (!showRowDetails || hideRowDetails
-            ? classes.detailsIconCollapsed
-            : classes.detailsIconExpanded));
+    const detailsIconClassName = clsx(
+        classes.detailsIcon,
+        !showRowDetails || hideRowDetails ? classes.detailsIconCollapsed : classes.detailsIconExpanded,
+    );
 
-    const results = [(<TableRow
-        key='summary'
-        hover
-        role="checkbox"
-        tabIndex={-1}
-        onMouseDown={handleRowMouseDown}
-        onMouseUp={handleRowMouseUp}
-    >
-        <TableCell>
-            <IconButton
-                color="primary"
-                className={classes.detailsButton}
-                onClick={handleRowDetailsButtonClick}
-            >
-                <ChevronRightIcon className={detailsIconClassName}/>
-            </IconButton>
-        </TableCell>
-        {props.columns.map((column) => {
-            const value = props.row[column.id];
-            return (<TableCell key={column.id} align={column.align}>
-                {column.format && typeof value === 'number'
-                    ? column.format(value)
-                    : value}
-            </TableCell>);
-        })}
-        <TableCell/>
-    </TableRow>)];
+    const results = [
+        <TableRow
+            key="summary"
+            hover
+            role="checkbox"
+            tabIndex={-1}
+            onMouseDown={handleRowMouseDown}
+            onMouseUp={handleRowMouseUp}
+        >
+            <TableCell>
+                <IconButton color="primary" className={classes.detailsButton} onClick={handleRowDetailsButtonClick}>
+                    <ChevronRightIcon className={detailsIconClassName} />
+                </IconButton>
+            </TableCell>
+            {props.columns.map(column => {
+                const value = props.row[column.id];
+                return (
+                    <TableCell key={column.id} align={column.align}>
+                        {column.format && typeof value === 'number' ? column.format(value) : value}
+                    </TableCell>
+                );
+            })}
+            <TableCell />
+        </TableRow>,
+    ];
 
     if (showRowDetails) {
-        results.push((<TableRow key='details'>
-            <TableCell className={classes.detailsCell} colSpan={props.columns.length + 2}>
-                <Collapse appear={true} in={!hideRowDetails} onExited={handleCloseAnimationComplete}>
-                    {props.renderDetails(props.row)}
-                </Collapse>
-            </TableCell>
-        </TableRow>));
+        results.push(
+            <TableRow key="details">
+                <TableCell className={classes.detailsCell} colSpan={props.columns.length + 2}>
+                    <Collapse appear={true} in={!hideRowDetails} onExited={handleCloseAnimationComplete}>
+                        {props.renderDetails(props.row)}
+                    </Collapse>
+                </TableCell>
+            </TableRow>,
+        );
     }
 
-    return (<React.Fragment>
-        {results}
-    </React.Fragment>);
+    return <React.Fragment>{results}</React.Fragment>;
 }

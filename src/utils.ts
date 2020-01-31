@@ -1,5 +1,5 @@
-import * as child from "child_process";
-import {ExecOptions} from "child_process";
+import * as child from 'child_process';
+import { ExecOptions } from 'child_process';
 
 export interface ExecResults {
     stdout: string;
@@ -14,8 +14,8 @@ export function execPromise(command: string, options?: ExecOptions): Promise<Exe
             }
             resolve({
                 stdout: stdout.toString(),
-                stderr: stderr.toString()
-            })
+                stderr: stderr.toString(),
+            });
         });
     });
 }

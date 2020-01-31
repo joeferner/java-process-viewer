@@ -1,4 +1,3 @@
-import React from 'react';
 import {
     Checkbox,
     List,
@@ -8,8 +7,9 @@ import {
     ListItemText,
     RootRef,
 } from '@material-ui/core';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import ReorderIcon from '@material-ui/icons/Reorder';
+import React from 'react';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { Column } from './Column';
 
 function reorder(list: any[], startIndex: number, endIndex: number): any[] {
@@ -27,71 +27,74 @@ export interface ColumnConfigListProps {
 export function ColumnConfigList(props: ColumnConfigListProps) {
     const columns = props.columns;
 
-    const handleColumnCheck = React.useCallback((columnId, checked) => {
-        props.onColumnsChange(setColumn(checked));
+    const handleColumnCheck = React.useCallback(
+        (columnId, checked) => {
+            props.onColumnsChange(setColumn(checked));
 
-        function setColumn(val: boolean): Column[] {
-            return props.columns.map((column) => {
-                return {
-                    ...column,
-                    visible: (column.id === columnId ? val : ('visible' in column ? column.visible : true)),
-                };
-            });
-        }
-    }, [props.columns, props.onColumnsChange]);
+            function setColumn(val: boolean): Column[] {
+                return props.columns.map(column => {
+                    return {
+                        ...column,
+                        visible: column.id === columnId ? val : 'visible' in column ? column.visible : true,
+                    };
+                });
+            }
+        },
+        [props.columns, props.onColumnsChange],
+    );
 
-    const onDragEnd = React.useCallback((result) => {
-        // dropped outside the list
-        if (!result.destination) {
-            return;
-        }
+    const onDragEnd = React.useCallback(
+        result => {
+            // dropped outside the list
+            if (!result.destination) {
+                return;
+            }
 
-        console.log(columns, result.source.index, result.destination.index);
-        const newList = reorder(
-            columns,
-            result.source.index,
-            result.destination.index,
-        );
-        props.onColumnsChange(newList);
-    }, [columns]);
+            const newList = reorder(columns, result.source.index, result.destination.index);
+            props.onColumnsChange(newList);
+        },
+        [columns],
+    );
 
-    return (<DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="droppable">
-            {(droppableProvided) => (
-                <RootRef rootRef={droppableProvided.innerRef}>
-                    <List>
-                        {columns.map((column, index) => (
-                            <Draggable
-                                key={column.id}
-                                draggableId={column.id}
-                                index={index}
-                            >
-                                {(provided) => {
-                                    const listItemProps = {
-                                        ContainerProps: {
-                                            ref: provided.innerRef,
-                                            ...provided.draggableProps,
-                                        },
-                                    };
-                                    return (<ListItem key={column.id} {...listItemProps}>
-                                        <ListItemIcon>
-                                            <Checkbox
-                                                checked={'visible' in column ? column.visible : true}
-                                                onChange={evt => handleColumnCheck(column.id, evt.target.checked)}
-                                            />
-                                        </ListItemIcon>
-                                        <ListItemText>{column.label}</ListItemText>
-                                        <ListItemSecondaryAction {...provided.dragHandleProps}>
-                                            <ReorderIcon color="disabled"/>
-                                        </ListItemSecondaryAction>
-                                    </ListItem>);
-                                }}
-                            </Draggable>
-                        ))}
-                        {droppableProvided.placeholder}
-                    </List>
-                </RootRef>
-            )}
-        </Droppable>
-    </DragDropContext>);
+    return (
+        <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="droppable">
+                {droppableProvided => (
+                    <RootRef rootRef={droppableProvided.innerRef}>
+                        <List>
+                            {columns.map((column, index) => (
+                                <Draggable key={column.id} draggableId={column.id} index={index}>
+                                    {provided => {
+                                        const listItemProps = {
+                                            ContainerProps: {
+                                                ref: provided.innerRef,
+                                                ...provided.draggableProps,
+                                            },
+                                        };
+                                        return (
+                                            <ListItem key={column.id} {...listItemProps}>
+                                                <ListItemIcon>
+                                                    <Checkbox
+                                                        checked={'visible' in column ? column.visible : true}
+                                                        onChange={evt =>
+                                                            handleColumnCheck(column.id, evt.target.checked)
+                                                        }
+                                                    />
+                                                </ListItemIcon>
+                                                <ListItemText>{column.label}</ListItemText>
+                                                <ListItemSecondaryAction {...provided.dragHandleProps}>
+                                                    <ReorderIcon color="disabled" />
+                                                </ListItemSecondaryAction>
+                                            </ListItem>
+                                        );
+                                    }}
+                                </Draggable>
+                            ))}
+                            {droppableProvided.placeholder}
+                        </List>
+                    </RootRef>
+                )}
+            </Droppable>
+        </DragDropContext>
+    );
 }

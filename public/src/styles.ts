@@ -1,4 +1,4 @@
-import {CSSProperties} from "@material-ui/styles/withStyles/withStyles";
+import { CSSProperties } from '@material-ui/styles/withStyles/withStyles';
 
 export interface CenterOptions {
     width?: number;
@@ -10,7 +10,7 @@ export function center(options?: CenterOptions): CSSProperties {
     options = {
         width: 500,
         height: 500,
-        ...(options || {})
+        ...(options || {}),
     };
     const results: CSSProperties = {
         width: `${options.width}px`,
@@ -23,7 +23,7 @@ export function center(options?: CenterOptions): CSSProperties {
         margin: 'auto',
         maxWidth: '100%',
         maxHeight: '100%',
-        overflow: 'auto'
+        overflow: 'auto',
     };
     if (options.centerContent) {
         results.display = 'flex';
