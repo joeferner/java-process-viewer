@@ -4,7 +4,7 @@ import { Column } from './components/common/Column';
 
 function createData(name: any, code: any, population: any, size: any): any {
     const density = population / size;
-    return { name, code, population, size, density };
+    return { id: code, name, code, population, size, density };
 }
 
 const initialRows = [

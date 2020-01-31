@@ -6,6 +6,8 @@ import { ColumnConfigDialog } from './ColumnConfigDialog';
 import ViewColumnIcon from '@material-ui/icons/ViewColumn';
 import { Column } from './Column';
 import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
+import { ConfigurableTableRow } from './ConfigurableTableRow';
+import { Row } from './Row';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -32,7 +34,7 @@ export enum SortDirection {
 }
 
 export interface ConfigurableTableProps {
-    rows: any[];
+    rows: Row[];
     columns: Column[];
     sortColumnId: string;
     sortDirection: SortDirection;
@@ -53,7 +55,7 @@ const defaultSort = (a: any, b: any) => {
 export function ConfigurableTable(props: ConfigurableTableProps) {
     const classes = useStyles();
     const [showColumnsConfig, setShowColumnsConfig] = React.useState<boolean>(false);
-    const [rows, setRows] = React.useState<any[]>([]);
+    const [rows, setRows] = React.useState<Row[]>([]);
 
     useEffect(() => {
         const sortedColumn = props.columns.filter(c => c.id === props.sortColumnId)[0] || props.columns[0];
@@ -140,19 +142,7 @@ export function ConfigurableTable(props: ConfigurableTableProps) {
                 </TableHead>
                 <TableBody>
                     {rows.map(row => {
-                        return (<TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                            {filteredColumns.map((column) => {
-                                const value = row[column.id];
-                                return (
-                                    <TableCell key={column.id} align={column.align}>
-                                        {column.format && typeof value === 'number'
-                                            ? column.format(value)
-                                            : value}
-                                    </TableCell>
-                                );
-                            })}
-                            <TableCell/>
-                        </TableRow>);
+                        return (<ConfigurableTableRow key={row.id} row={row} columns={filteredColumns}/>);
                     })}
                 </TableBody>
             </Table>
