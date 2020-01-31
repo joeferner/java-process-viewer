@@ -18,6 +18,10 @@ const config = {
     module: {
         rules: [
             {
+                test: /\.worker\.js$/,
+                use: { loader: 'worker-loader' }
+            },
+            {
                 test: /\.tsx?$/,
                 use: 'babel-loader',
                 exclude: /node_modules/,

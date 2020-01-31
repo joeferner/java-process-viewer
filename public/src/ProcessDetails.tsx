@@ -5,7 +5,11 @@ import { ConfigurableTable, SortDirection } from './components/common/Configurab
 import { getProcessDetails } from './data';
 import { ThreadDetails } from './ThreadDetails';
 import { SearchTextBox } from './components/SearchTextBox';
-import { App } from './App';
+import SearchWorker from 'worker-loader!./worker/search';
+import { ParseResults as JStackParseResults } from 'jstack-parser/src/index';
+import { Thread } from 'jstack-parser/target';
+
+const searchWorker = SearchWorker();
 
 const useStyles = makeStyles(theme => ({
     refreshButton: {
@@ -13,6 +17,7 @@ const useStyles = makeStyles(theme => ({
     },
     search: {
         margin: '16px',
+        width: '400px',
     },
     table: {
         flex: 1,
@@ -47,14 +52,16 @@ export function ProcessDetails(props: ProcessDetailsProps) {
     const classes = useStyles();
     const { pid } = props.match.params;
     const [columns, setColumns] = React.useState<Column[]>(initialColumns);
+    const [details, setDetails] = React.useState<JStackParseResults | undefined>(undefined);
     const [rows, setRows] = React.useState<any[]>([]);
     const [sortColumnId, setSortColumnId] = React.useState<string>('javaThreadId');
     const [sortDirection, setSortDirection] = React.useState<SortDirection>(SortDirection.ASCENDING);
     const [search, setSearch] = React.useState<string>('');
 
     const refresh = async () => {
-        const details = await getProcessDetails(parseInt(pid, 10));
-        const newRows = details.threads.map(thread => {
+        const newDetails = await getProcessDetails(parseInt(pid, 10));
+        setDetails(newDetails);
+        const newRows = newDetails.threads.map(thread => {
             return {
                 id: thread.tid,
                 ...thread,
@@ -63,13 +70,27 @@ export function ProcessDetails(props: ProcessDetailsProps) {
         setRows(newRows);
     };
 
+    useEffect(() => {
+        searchWorker.onmessage = (e: MessageEvent) => {
+            setRows((e.data as Thread[]).map(thread => {
+                return {
+                    id: thread.tid,
+                    ...thread,
+                };
+            }));
+        };
+    }, []);
+
     const handleRenderDetails = React.useCallback(row => {
         return <ThreadDetails thread={row}/>;
     }, []);
 
     const handleSearchChange = React.useCallback(value => {
         setSearch(value);
-    }, []);
+        if (details) {
+            searchWorker.postMessage([details.threads, value]);
+        }
+    }, [details]);
 
     const handleSetColumns = React.useCallback(newColumns => {
         setColumns(newColumns);
@@ -85,8 +106,10 @@ export function ProcessDetails(props: ProcessDetailsProps) {
     }, [pid]);
 
     return (<Paper>
-        <Button className={classes.refreshButton} onClick={() => refresh()}>Refresh</Button>
-        <SearchTextBox className={classes.search} value={search} onChange={handleSearchChange}/>
+        <Paper>
+            <Button className={classes.refreshButton} onClick={() => refresh()}>Refresh</Button>
+            <SearchTextBox className={classes.search} value={search} onChange={handleSearchChange}/>
+        </Paper>
         <ConfigurableTable
             className={classes.table}
             containerClassName={classes.tableContainer}
