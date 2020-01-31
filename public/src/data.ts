@@ -1,5 +1,6 @@
-import {Process} from "./models";
-import axios from "axios";
+import { Process } from './models';
+import axios from 'axios';
+import { ParseResults as JStackParseResults } from 'jstack-parser/src/index';
 
 export interface ProcessListResults {
     processes: Process[];
@@ -11,4 +12,12 @@ export async function getProcessList(): Promise<ProcessListResults> {
         return ret.data;
     }
     throw new Error(`Could not get processes: ${ret.status}`);
+}
+
+export async function getProcessDetails(pid: number): Promise<JStackParseResults> {
+    const ret = await axios.get(`/process/${pid}`);
+    if (ret.status === 200) {
+        return ret.data;
+    }
+    throw new Error(`Could not get process details (pid: ${pid}): ${ret.status}`);
 }

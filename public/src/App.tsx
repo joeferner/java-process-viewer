@@ -59,7 +59,7 @@ export function App() {
             <main>
                 <div>
                     <Route exact path="/" component={ProcessList}/>
-                    <Route path="/pid/" component={ProcessDetails}/>
+                    <Route path="/pid/:pid" component={ProcessDetails}/>
                 </div>
             </main>
         </HashRouter>
