@@ -1,12 +1,16 @@
-import { InputAdornment, makeStyles, Paper, TextField, Tooltip } from '@material-ui/core';
+import { Button, makeStyles, Paper } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import { Column } from './components/common/Column';
 import { ConfigurableTable, SortDirection } from './components/common/ConfigurableTable';
 import { getProcessDetails } from './data';
 import { ThreadDetails } from './ThreadDetails';
-import SearchIcon from '@material-ui/icons/Search';
+import { SearchTextBox } from './components/SearchTextBox';
+import { App } from './App';
 
 const useStyles = makeStyles(theme => ({
+    refreshButton: {
+        margin: '16px',
+    },
     search: {
         margin: '16px',
     },
@@ -46,6 +50,7 @@ export function ProcessDetails(props: ProcessDetailsProps) {
     const [rows, setRows] = React.useState<any[]>([]);
     const [sortColumnId, setSortColumnId] = React.useState<string>('javaThreadId');
     const [sortDirection, setSortDirection] = React.useState<SortDirection>(SortDirection.ASCENDING);
+    const [search, setSearch] = React.useState<string>('');
 
     const refresh = async () => {
         const details = await getProcessDetails(parseInt(pid, 10));
@@ -62,29 +67,26 @@ export function ProcessDetails(props: ProcessDetailsProps) {
         return <ThreadDetails thread={row}/>;
     }, []);
 
+    const handleSearchChange = React.useCallback(value => {
+        setSearch(value);
+    }, []);
+
+    const handleSetColumns = React.useCallback(newColumns => {
+        setColumns(newColumns);
+    }, []);
+
+    const handleSortChange = React.useCallback((newSortColumnId, newSortDirection) => {
+        setSortColumnId(newSortColumnId);
+        setSortDirection(newSortDirection);
+    }, []);
+
     useEffect(() => {
         refresh();
     }, [pid]);
 
     return (<Paper>
-        <TextField
-            className={classes.search}
-            type={'search'}
-            value={''}
-            placeholder={'Search'}
-            onChange={(evt) => {
-
-            }}
-            InputProps={{
-                startAdornment: (
-                    <InputAdornment position="start">
-                        <Tooltip title={'Search'}>
-                            <SearchIcon/>
-                        </Tooltip>
-                    </InputAdornment>
-                ),
-            }}
-        />
+        <Button className={classes.refreshButton} onClick={() => refresh()}>Refresh</Button>
+        <SearchTextBox className={classes.search} value={search} onChange={handleSearchChange}/>
         <ConfigurableTable
             className={classes.table}
             containerClassName={classes.tableContainer}
@@ -92,11 +94,8 @@ export function ProcessDetails(props: ProcessDetailsProps) {
             columns={columns}
             sortColumnId={sortColumnId}
             sortDirection={sortDirection}
-            onSetColumns={newColumns => setColumns(newColumns)}
-            onSortChange={(newSortColumnId, newSortDirection) => {
-                setSortColumnId(newSortColumnId);
-                setSortDirection(newSortDirection);
-            }}
+            onSetColumns={handleSetColumns}
+            onSortChange={handleSortChange}
             renderDetails={handleRenderDetails}
         />
     </Paper>);

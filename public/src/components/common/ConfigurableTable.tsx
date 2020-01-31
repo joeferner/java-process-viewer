@@ -4,7 +4,7 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ViewColumnIcon from '@material-ui/icons/ViewColumn';
 import clsx from 'clsx';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Column } from './Column';
 import { ColumnConfigDialog } from './ColumnConfigDialog';
 import { ConfigurableTableRow } from './ConfigurableTableRow';
@@ -50,12 +50,12 @@ const defaultSort = (a: any, b: any) => {
     return 0;
 };
 
-export function ConfigurableTable(props: ConfigurableTableProps) {
+function _ConfigurableTable(props: ConfigurableTableProps) {
     const classes = useStyles();
     const [showColumnsConfig, setShowColumnsConfig] = React.useState<boolean>(false);
     const [rows, setRows] = React.useState<Row[]>([]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const sortedColumn = props.columns.filter(c => c.id === props.sortColumnId)[0] || props.columns[0];
         const newRows = Array.from(props.rows);
         newRows.sort((a, b) => {
@@ -104,7 +104,7 @@ export function ConfigurableTable(props: ConfigurableTableProps) {
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead>
                         <TableRow>
-                            <TableCell className={classes.tableHeaderCell} />
+                            <TableCell className={classes.tableHeaderCell}/>
                             {filteredColumns.map(column => (
                                 <TableCell
                                     key={column.id}
@@ -122,9 +122,9 @@ export function ConfigurableTable(props: ConfigurableTableProps) {
                                         {column.label}
                                         {props.sortColumnId === column.id ? (
                                             props.sortDirection === SortDirection.ASCENDING ? (
-                                                <ArrowDropDownIcon />
+                                                <ArrowDropDownIcon/>
                                             ) : (
-                                                <ArrowDropUpIcon />
+                                                <ArrowDropUpIcon/>
                                             )
                                         ) : null}
                                     </div>
@@ -135,7 +135,7 @@ export function ConfigurableTable(props: ConfigurableTableProps) {
                                     className={classes.tableHeaderCellConfigColumnsButton}
                                     onClick={() => setShowColumnsConfig(true)}
                                 >
-                                    <ViewColumnIcon color="primary" style={{ color: '#eee' }} />
+                                    <ViewColumnIcon color="primary" style={{ color: '#eee' }}/>
                                 </IconButton>
                             </TableCell>
                         </TableRow>
@@ -157,3 +157,12 @@ export function ConfigurableTable(props: ConfigurableTableProps) {
         </Paper>
     );
 }
+
+export const ConfigurableTable = React.memo(_ConfigurableTable, (prevProps, nextProps) => {
+    if (prevProps === nextProps) {
+        return true;
+    }
+    return JSON.stringify(prevProps) === JSON.stringify(nextProps);
+});
+
+// (ConfigurableTable as any).whyDidYouRender = true;
