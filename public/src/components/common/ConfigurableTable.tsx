@@ -10,12 +10,6 @@ import { ConfigurableTableRow } from './ConfigurableTableRow';
 import { Row } from './Row';
 
 const useStyles = makeStyles(theme => ({
-    root: {
-        width: '100%',
-    },
-    container: {
-        maxHeight: 440,
-    },
     tableHeaderCell: {
         backgroundColor: theme.palette.common.black,
         color: theme.palette.common.white,
@@ -34,12 +28,15 @@ export enum SortDirection {
 }
 
 export interface ConfigurableTableProps {
+    className?: string;
+    containerClassName?: string;
     rows: Row[];
     columns: Column[];
     sortColumnId: string;
     sortDirection: SortDirection;
     onSortChange: (sortColumnId: string, sortDirection: SortDirection) => void;
     onSetColumns: (columns: Column[]) => void;
+    renderDetails: (row: any) => any;
 }
 
 const defaultSort = (a: any, b: any) => {
@@ -88,7 +85,7 @@ export function ConfigurableTable(props: ConfigurableTableProps) {
     const filteredColumns = props.columns.filter(
         column => (('visible' in column) ? column.visible : true),
     );
-    return (<Paper className={classes.root}>
+    return (<Paper className={props.className}>
         <ColumnConfigDialog
             onClose={() => setShowColumnsConfig(false)}
             open={showColumnsConfig}
@@ -96,10 +93,11 @@ export function ConfigurableTable(props: ConfigurableTableProps) {
             onColumnsChange={newColumns => props.onSetColumns(newColumns)}
         />
 
-        <TableContainer className={classes.container}>
+        <TableContainer className={props.containerClassName}>
             <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                     <TableRow>
+                        <TableCell className={classes.tableHeaderCell}/>
                         {filteredColumns.map((column) => (
                             <TableCell
                                 key={column.id}
@@ -142,7 +140,12 @@ export function ConfigurableTable(props: ConfigurableTableProps) {
                 </TableHead>
                 <TableBody>
                     {rows.map(row => {
-                        return (<ConfigurableTableRow key={row.id} row={row} columns={filteredColumns}/>);
+                        return (<ConfigurableTableRow
+                            key={row.id}
+                            row={row}
+                            columns={filteredColumns}
+                            renderDetails={(r) => props.renderDetails(r)}
+                        />);
                     })}
                 </TableBody>
             </Table>

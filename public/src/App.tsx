@@ -1,10 +1,10 @@
-import {AppBar, IconButton, makeStyles, Toolbar, Typography} from '@material-ui/core';
+import { AppBar, IconButton, makeStyles, Toolbar, Typography } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import React from 'react';
-import {HashRouter, Route} from 'react-router-dom';
-import {ProcessList} from './ProcessList';
-import {ProcessDetails} from "./ProcessDetails";
-import {AppDrawer} from "./AppDrawer";
+import { HashRouter, Route } from 'react-router-dom';
+import { ProcessList } from './ProcessList';
+import { ProcessDetails } from './ProcessDetails';
+import { AppDrawer } from './AppDrawer';
 
 const useStyles = makeStyles(theme => ({
     toolbar: {
@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
         marginRight: theme.spacing(2),
     },
     drawerTitle: {
-        margin: '8px'
+        margin: '8px',
     },
     drawerList: {
         width: 250,
@@ -56,12 +56,8 @@ export function App() {
                 <AppDrawer drawerOpen={drawerOpen} handleDrawerClose={handleDrawerClose}/>
             </AppBar>
 
-            <main>
-                <div>
-                    <Route exact path="/" component={ProcessList}/>
-                    <Route path="/pid/:pid" component={ProcessDetails}/>
-                </div>
-            </main>
+            <Route exact path="/" component={ProcessList}/>
+            <Route path="/pid/:pid" component={ProcessDetails}/>
         </HashRouter>
     );
 }
