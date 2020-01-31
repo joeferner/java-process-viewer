@@ -1,17 +1,21 @@
-import { makeStyles } from '@material-ui/core';
+import { InputAdornment, makeStyles, Paper, TextField, Tooltip } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import { Column } from './components/common/Column';
 import { ConfigurableTable, SortDirection } from './components/common/ConfigurableTable';
 import { getProcessDetails } from './data';
 import { ThreadDetails } from './ThreadDetails';
+import SearchIcon from '@material-ui/icons/Search';
 
 const useStyles = makeStyles(theme => ({
+    search: {
+        margin: '16px',
+    },
     table: {
         flex: 1,
         display: 'flex',
     },
     tableContainer: {
-        height: `calc(100vh - 70px)`,
+        height: `calc(100vh - 135px)`,
     },
 }));
 
@@ -55,14 +59,32 @@ export function ProcessDetails(props: ProcessDetailsProps) {
     };
 
     const handleRenderDetails = React.useCallback(row => {
-        return <ThreadDetails thread={row} />;
+        return <ThreadDetails thread={row}/>;
     }, []);
 
     useEffect(() => {
         refresh();
     }, [pid]);
 
-    return (
+    return (<Paper>
+        <TextField
+            className={classes.search}
+            type={'search'}
+            value={''}
+            placeholder={'Search'}
+            onChange={(evt) => {
+
+            }}
+            InputProps={{
+                startAdornment: (
+                    <InputAdornment position="start">
+                        <Tooltip title={'Search'}>
+                            <SearchIcon/>
+                        </Tooltip>
+                    </InputAdornment>
+                ),
+            }}
+        />
         <ConfigurableTable
             className={classes.table}
             containerClassName={classes.tableContainer}
@@ -77,5 +99,5 @@ export function ProcessDetails(props: ProcessDetailsProps) {
             }}
             renderDetails={handleRenderDetails}
         />
-    );
+    </Paper>);
 }
