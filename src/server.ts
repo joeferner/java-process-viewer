@@ -21,7 +21,7 @@ export function start(options: StartOptions) {
     app.use('/', express.static(path.resolve(__dirname, '..', 'public', 'resources')));
     app.use(express.static(path.resolve(__dirname, '..', 'public', 'target')));
 
-    app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
         console.error(`request failed: ${req.url}`, err);
         if (process.env.NODE_ENV === 'dev') {
             next(err);
@@ -46,7 +46,7 @@ export function start(options: StartOptions) {
 
     async function getProcessDetails(req: Request, res: Response, next: NextFunction) {
         try {
-            const pid = req.params.pid;
+            const { pid } = req.params;
             const cmd = options.jstackCommand.replace(/\$pid/, pid);
             const rawResults = await execPromise(cmd);
             const results = parseJStack(rawResults.stdout, rawResults.stderr);
