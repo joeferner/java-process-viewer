@@ -111,7 +111,7 @@ export function ProcessDetails(props: ProcessDetailsProps) {
         setSortDirection(newSortDirection);
     }, []);
 
-    useEffect(() => {
+    React.useEffect(() => {
         refresh();
     }, [pid, appContext.refreshSignal]);
 

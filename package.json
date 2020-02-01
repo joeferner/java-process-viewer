@@ -19,7 +19,8 @@
     "lint": "eslint --fix src/**/*.ts",
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run precommit",
-    "precommit": "npm run format && npm run lint && cd public && npm run precommit"
+    "precommit": "npm run format && npm run lint && cd public && npm run precommit",
+    "install": "cd public && npm install"
   },
   "dependencies": {
     "express": "^4.17.1",
