@@ -5,6 +5,7 @@ import React from 'react';
 const useStyles = makeStyles(theme => ({
     details: {
         padding: '16px',
+        fontFamily: 'monospace',
     },
 }));
 
@@ -17,9 +18,11 @@ export function ThreadDetails(props: ThreadDetailsProps) {
 
     return (
         <div className={classes.details}>
-            {props.thread.stackItems.map((item, index) => {
-                return <div key={index}>{item.line}</div>;
-            })}
+            {props.thread.stackItems.length === 0
+                ? 'No stack trace'
+                : props.thread.stackItems.map((item, index) => {
+                      return <div key={index}>{item.line}</div>;
+                  })}
         </div>
     );
 }
