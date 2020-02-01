@@ -1,20 +1,19 @@
-import { Button, makeStyles, Paper } from '@material-ui/core';
+import { makeStyles, Paper } from '@material-ui/core';
 import { ParseResults as JStackParseResults } from 'jstack-parser/src/index';
 import { Thread } from 'jstack-parser/target';
 import React, { useEffect } from 'react';
+// @ts-ignore
 import SearchWorker from 'worker-loader!./worker/search';
 import { Column } from './components/common/Column';
 import { ConfigurableTable, SortDirection } from './components/common/ConfigurableTable';
 import { SearchTextBox } from './components/SearchTextBox';
 import { getProcessDetails } from './data';
 import { ThreadDetails } from './ThreadDetails';
+import { AppContext, AppContextData } from './AppContext';
 
 const searchWorker = SearchWorker();
 
 const useStyles = makeStyles(theme => ({
-    refreshButton: {
-        margin: '16px',
-    },
     search: {
         margin: '16px',
         width: '400px',
@@ -50,7 +49,8 @@ export interface ProcessDetailsProps {
 
 export function ProcessDetails(props: ProcessDetailsProps) {
     const classes = useStyles();
-    const { pid } = props.match.params;
+    const appContext = React.useContext<AppContextData>(AppContext);
+    const pid = parseInt(props.match.params.pid, 10);
     const [columns, setColumns] = React.useState<Column[]>(initialColumns);
     const [details, setDetails] = React.useState<JStackParseResults | undefined>(undefined);
     const [rows, setRows] = React.useState<any[]>([]);
@@ -58,17 +58,22 @@ export function ProcessDetails(props: ProcessDetailsProps) {
     const [sortDirection, setSortDirection] = React.useState<SortDirection>(SortDirection.ASCENDING);
     const [search, setSearch] = React.useState<string>('');
 
-    const refresh = async () => {
-        const newDetails = await getProcessDetails(parseInt(pid, 10));
-        setDetails(newDetails);
-        const newRows = newDetails.threads.map(thread => {
-            return {
-                id: thread.tid,
-                ...thread,
-            };
-        });
-        setRows(newRows);
-    };
+    const refresh = React.useCallback(async () => {
+        appContext.onLoadingChange(true);
+        try {
+            const newDetails = await getProcessDetails(pid);
+            setDetails(newDetails);
+            const newRows = newDetails.threads.map(thread => {
+                return {
+                    id: thread.tid,
+                    ...thread,
+                };
+            });
+            setRows(newRows);
+        } finally {
+            appContext.onLoadingChange(false);
+        }
+    }, [pid, appContext.onLoadingChange]);
 
     useEffect(() => {
         searchWorker.onmessage = (e: MessageEvent) => {
@@ -108,14 +113,11 @@ export function ProcessDetails(props: ProcessDetailsProps) {
 
     useEffect(() => {
         refresh();
-    }, [pid]);
+    }, [pid, appContext.refreshSignal]);
 
     return (
         <Paper>
             <Paper>
-                <Button className={classes.refreshButton} onClick={() => refresh()}>
-                    Refresh
-                </Button>
                 <SearchTextBox className={classes.search} value={search} onChange={handleSearchChange} />
             </Paper>
             <ConfigurableTable

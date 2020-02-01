@@ -18,7 +18,7 @@ const config = {
     module: {
         rules: [
             {
-                test: /\.worker\.js$/,
+                test: /\.worker\.[tj]s$/,
                 use: { loader: 'worker-loader' }
             },
             {
