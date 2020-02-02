@@ -81,9 +81,16 @@ export function ProcessDetails(props: ProcessDetailsProps) {
     const [error, setError] = React.useState<string | undefined>(undefined);
 
     const refresh = React.useCallback(async () => {
+        setError('');
         appContext.onLoadingChange(true);
         try {
-            const newDetails = await getProcessDetails(pid);
+            let newDetails: JStackParseResults;
+            try {
+                newDetails = await getProcessDetails(pid);
+            } catch (err) {
+                setError(err.message);
+                throw err;
+            }
             setDetails(newDetails);
             const newRows = newDetails.threads.map(thread => {
                 return {

@@ -52,6 +52,11 @@ export function start(options: StartOptions) {
             const results = parseJStack(rawResults.stdout, rawResults.stderr);
             res.send(results);
         } catch (err) {
+            if (err.message.indexOf('No such process') >= 0) {
+                res.sendStatus(404);
+                res.send('');
+                return;
+            }
             next(err);
         }
     }
