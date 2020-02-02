@@ -9,12 +9,13 @@
   "author": "Joe Ferner <joe@fernsroth.com>",
   "license": "MIT",
   "scripts": {
-    "build": "cross-env NODE_ENV=prod webpack --color --progress",
+    "build": "npm run pegjs && cross-env NODE_ENV=prod webpack --color --progress",
     "build:watch": "cross-env NODE_ENV=dev webpack --watch --color --progress",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.tsx\"",
     "lint": "eslint --fix src/**/*.ts",
     "test": "jest --config jestconfig.json",
     "test:watch": "jest --watchAll --config jestconfig.json",
+    "pegjs": "pegjs -o src/worker/search-parser.js src/worker/search.pegjs",
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run precommit",
     "precommit": "npm run format && npm run lint"
@@ -22,6 +23,7 @@
   "dependencies": {
     "@material-ui/core": "^4.8.3",
     "@material-ui/icons": "^4.5.1",
+    "@types/pegjs": "^0.10.1",
     "@types/react-beautiful-dnd": "^11.0.4",
     "@welldone-software/why-did-you-render": "^4.0.0",
     "axios": "^0.19.1",
@@ -29,6 +31,7 @@
     "debounce": "^1.2.0",
     "jps-parser": "0.0.x",
     "jstack-parser": "0.0.x",
+    "pegjs": "^0.10.0",
     "react": "^16.12.0",
     "react-beautiful-dnd": "^12.2.0",
     "react-dom": "^16.12.0",

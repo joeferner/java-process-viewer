@@ -5,7 +5,14 @@ export interface SearchWorkerRequestMessage {
     threads: Thread[];
 }
 
-export interface SearchWorkerResponseMessage {
+export interface SearchWorkerResponseBase {
     searchString: string;
+}
+
+export interface SearchWorkerResponseMessage extends SearchWorkerResponseBase {
     threads: Thread[];
+}
+
+export interface SearchWorkerErrorResponseMessage extends SearchWorkerResponseBase {
+    errorMessage: string;
 }

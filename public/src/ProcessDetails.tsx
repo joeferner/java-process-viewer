@@ -1,4 +1,4 @@
-import { makeStyles, Paper } from '@material-ui/core';
+import { makeStyles, Paper, Typography } from '@material-ui/core';
 import { ParseResults as JStackParseResults } from 'jstack-parser/src/index';
 import React, { useEffect } from 'react';
 // @ts-ignore
@@ -10,7 +10,12 @@ import { getProcessDetails } from './data';
 import { ThreadDetails } from './ThreadDetails';
 import { AppContext, AppContextData } from './AppContext';
 import { debounce } from 'debounce';
-import { SearchWorkerRequestMessage, SearchWorkerResponseMessage } from './model';
+import {
+    SearchWorkerErrorResponseMessage,
+    SearchWorkerRequestMessage,
+    SearchWorkerResponseBase,
+    SearchWorkerResponseMessage,
+} from './model';
 
 const searchWorker = SearchWorker();
 
@@ -19,6 +24,10 @@ const useStyles = makeStyles(theme => ({
         margin: '16px',
         width: '400px',
     },
+    header: {
+        display: 'flex',
+        alignItems: 'center',
+    },
     table: {
         flex: 1,
         display: 'flex',
@@ -26,6 +35,7 @@ const useStyles = makeStyles(theme => ({
     tableContainer: {
         height: `calc(100vh - 135px)`,
     },
+    error: {},
 }));
 
 const initialColumns: Column[] = [
@@ -68,6 +78,7 @@ export function ProcessDetails(props: ProcessDetailsProps) {
     const [sortColumnId, setSortColumnId] = React.useState<string>('javaThreadId');
     const [sortDirection, setSortDirection] = React.useState<SortDirection>(SortDirection.ASCENDING);
     const [search, setSearch] = React.useState<string>('');
+    const [error, setError] = React.useState<string | undefined>(undefined);
 
     const refresh = React.useCallback(async () => {
         appContext.onLoadingChange(true);
@@ -88,18 +99,26 @@ export function ProcessDetails(props: ProcessDetailsProps) {
 
     useEffect(() => {
         searchWorker.onmessage = (e: MessageEvent) => {
-            const data: SearchWorkerResponseMessage = e.data;
+            const data: SearchWorkerResponseBase = e.data;
             if (data.searchString !== search) {
                 return;
             }
-            setRows(
-                data.threads.map(thread => {
-                    return {
-                        id: thread.tid,
-                        ...thread,
-                    };
-                }),
-            );
+
+            if ((data as SearchWorkerErrorResponseMessage).errorMessage) {
+                const errorData = data as SearchWorkerErrorResponseMessage;
+                setError(errorData.errorMessage);
+            } else if ((data as SearchWorkerResponseMessage).threads) {
+                const successData = data as SearchWorkerResponseMessage;
+                setError(undefined);
+                setRows(
+                    successData.threads.map(thread => {
+                        return {
+                            id: thread.tid,
+                            ...thread,
+                        };
+                    }),
+                );
+            }
         };
     }, [search]);
 
@@ -131,8 +150,13 @@ export function ProcessDetails(props: ProcessDetailsProps) {
 
     return (
         <Paper>
-            <Paper>
+            <Paper className={classes.header}>
                 <SearchTextBox className={classes.search} value={search} onChange={handleSearchChange} />
+                {error ? (
+                    <Typography color="secondary" className={classes.error}>
+                        {error}
+                    </Typography>
+                ) : null}
             </Paper>
             <ConfigurableTable
                 className={classes.table}
