@@ -1,6 +1,5 @@
 import { makeStyles, Paper } from '@material-ui/core';
 import { ParseResults as JStackParseResults } from 'jstack-parser/src/index';
-import { Thread } from 'jstack-parser/target';
 import React, { useEffect } from 'react';
 // @ts-ignore
 import SearchWorker from 'worker-loader!./worker/search';
@@ -10,6 +9,8 @@ import { SearchTextBox } from './components/SearchTextBox';
 import { getProcessDetails } from './data';
 import { ThreadDetails } from './ThreadDetails';
 import { AppContext, AppContextData } from './AppContext';
+import { debounce } from 'debounce';
+import { SearchWorkerRequestMessage, SearchWorkerResponseMessage } from './model';
 
 const searchWorker = SearchWorker();
 
@@ -47,6 +48,16 @@ export interface ProcessDetailsProps {
     };
 }
 
+const postSearch = debounce((details: JStackParseResults | undefined, searchString: string) => {
+    if (details) {
+        const req: SearchWorkerRequestMessage = {
+            searchString,
+            threads: details.threads,
+        };
+        searchWorker.postMessage(req);
+    }
+}, 200);
+
 export function ProcessDetails(props: ProcessDetailsProps) {
     const classes = useStyles();
     const appContext = React.useContext<AppContextData>(AppContext);
@@ -77,8 +88,12 @@ export function ProcessDetails(props: ProcessDetailsProps) {
 
     useEffect(() => {
         searchWorker.onmessage = (e: MessageEvent) => {
+            const data: SearchWorkerResponseMessage = e.data;
+            if (data.searchString !== search) {
+                return;
+            }
             setRows(
-                (e.data as Thread[]).map(thread => {
+                data.threads.map(thread => {
                     return {
                         id: thread.tid,
                         ...thread,
@@ -86,18 +101,17 @@ export function ProcessDetails(props: ProcessDetailsProps) {
                 }),
             );
         };
-    }, []);
+    }, [search]);
 
     const handleRenderDetails = React.useCallback(row => {
         return <ThreadDetails thread={row} />;
     }, []);
 
     const handleSearchChange = React.useCallback(
-        value => {
-            setSearch(value);
-            if (details) {
-                searchWorker.postMessage([details.threads, value]);
-            }
+        (newSearchString: string) => {
+            setSearch(newSearchString);
+            postSearch.clear();
+            postSearch(details, newSearchString);
         },
         [details],
     );
