@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { getProcessList } from './data';
 import { center } from './styles';
 import { AppContext, AppContextData } from './AppContext';
-import { Process } from 'jps-parser';
+import { JpsProcess } from 'java-process-information';
 
 const useStyles = makeStyles(theme => ({
     loading: {
@@ -47,7 +47,7 @@ export function ProcessList() {
     const appContext = React.useContext<AppContextData>(AppContext);
     const [loading, setLoading] = React.useState<boolean>(true);
     const [error, setError] = React.useState<boolean>(false);
-    const [processes, setProcesses] = React.useState<Process[] | undefined>(undefined);
+    const [processes, setProcesses] = React.useState<JpsProcess[] | undefined>(undefined);
 
     const refresh = React.useCallback(async () => {
         try {
@@ -55,11 +55,11 @@ export function ProcessList() {
             setLoading(true);
             const processList = await getProcessList();
             const newProcesses = processList.processes
-                .filter((p: Process) => {
-                    return p.name.toLowerCase() !== 'jps';
+                .filter((p: JpsProcess) => {
+                    return (p.name || '').toLowerCase() !== 'jps';
                 })
-                .sort((a: Process, b: Process) => {
-                    return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
+                .sort((a: JpsProcess, b: JpsProcess) => {
+                    return (a.name || '').toLowerCase() > (b.name || '').toLowerCase() ? 1 : -1;
                 });
             setProcesses(newProcesses);
         } catch (err) {
@@ -70,8 +70,8 @@ export function ProcessList() {
         }
     }, []);
 
-    const handleClick = React.useCallback((row: Process) => {
-        history.push(`/pid/${row.pid}`);
+    const handleClick = React.useCallback((row: JpsProcess) => {
+        history.push(`/pid/${row.pid}/threads`);
     }, []);
 
     React.useEffect(() => {

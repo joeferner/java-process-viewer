@@ -1,8 +1,8 @@
-import { Thread } from 'jstack-parser/target';
+import { JStackThread } from 'java-process-information';
 
 export interface SearchWorkerRequestMessage {
     searchString: string;
-    threads: Thread[];
+    threads: JStackThread[];
 }
 
 export interface SearchWorkerResponseBase {
@@ -10,7 +10,7 @@ export interface SearchWorkerResponseBase {
 }
 
 export interface SearchWorkerResponseMessage extends SearchWorkerResponseBase {
-    threads: Thread[];
+    threads: JStackThread[];
 }
 
 export interface SearchWorkerErrorResponseMessage extends SearchWorkerResponseBase {

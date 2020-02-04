@@ -1,12 +1,12 @@
 import { makeStyles, Paper, Typography } from '@material-ui/core';
-import { ParseResults as JStackParseResults } from 'jstack-parser/src/index';
+import { JStackParseResults } from 'java-process-information';
 import React, { useEffect } from 'react';
 // @ts-ignore
 import SearchWorker from 'worker-loader!./worker/search';
 import { Column } from './components/common/Column';
 import { ConfigurableTable, SortDirection } from './components/common/ConfigurableTable';
 import { SearchTextBox } from './components/SearchTextBox';
-import { getProcessDetails } from './data';
+import { getProcessThreads } from './data';
 import { ThreadDetails } from './ThreadDetails';
 import { AppContext, AppContextData } from './AppContext';
 import { debounce } from 'debounce';
@@ -68,7 +68,7 @@ const postSearch = debounce((details: JStackParseResults | undefined, searchStri
     }
 }, 200);
 
-export function ProcessDetails(props: ProcessDetailsProps) {
+export function Threads(props: ProcessDetailsProps) {
     const classes = useStyles();
     const appContext = React.useContext<AppContextData>(AppContext);
     const pid = parseInt(props.match.params.pid, 10);
@@ -86,7 +86,7 @@ export function ProcessDetails(props: ProcessDetailsProps) {
         try {
             let newDetails: JStackParseResults;
             try {
-                newDetails = await getProcessDetails(pid);
+                newDetails = await getProcessThreads(pid);
             } catch (err) {
                 setError(err.message);
                 throw err;

@@ -1,9 +1,8 @@
 import axios from 'axios';
-import { ParseResults as JStackParseResults } from 'jstack-parser/src/index';
-import { Process } from './models';
+import { JpsProcess, JStackParseResults } from 'java-process-information';
 
 export interface ProcessListResults {
-    processes: Process[];
+    processes: JpsProcess[];
 }
 
 export async function getProcessList(): Promise<ProcessListResults> {
@@ -14,8 +13,8 @@ export async function getProcessList(): Promise<ProcessListResults> {
     throw new Error(`Could not get processes: ${ret.status}`);
 }
 
-export async function getProcessDetails(pid: number): Promise<JStackParseResults> {
-    const ret = await axios.get(`/process/${pid}`);
+export async function getProcessThreads(pid: number): Promise<JStackParseResults> {
+    const ret = await axios.get(`/process/${pid}/threads`);
     if (ret.status === 200) {
         return ret.data;
     }

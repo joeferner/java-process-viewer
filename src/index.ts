@@ -3,8 +3,8 @@ import { start } from './server';
 
 const { argv } = yargs.options({
     port: { type: 'number', alias: 'p', default: 8080 },
-    jps: { type: 'string', default: 'jps -lv' },
-    jstack: { type: 'string', default: 'jstack $pid' }
+    jps: { type: 'string', default: 'jps' },
+    jstack: { type: 'string', default: 'jstack' }
 });
 
 async function begin() {

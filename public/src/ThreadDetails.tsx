@@ -1,5 +1,5 @@
 import { makeStyles } from '@material-ui/core';
-import { Thread } from 'jstack-parser/src/index';
+import { JStackThread } from 'java-process-information';
 import React from 'react';
 
 const useStyles = makeStyles(theme => ({
@@ -10,7 +10,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export interface ThreadDetailsProps {
-    thread: Thread;
+    thread: JStackThread;
 }
 
 export function ThreadDetails(props: ThreadDetailsProps) {

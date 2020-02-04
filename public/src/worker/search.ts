@@ -1,4 +1,4 @@
-import { Thread } from 'jstack-parser/target';
+import { JStackThread } from 'java-process-information';
 import { SearchWorkerErrorResponseMessage, SearchWorkerRequestMessage, SearchWorkerResponseMessage } from '../model';
 
 const searchParser = require('./search-parser');
@@ -50,7 +50,7 @@ const isStringMatch = (match: string, value: string): boolean => {
     return value.indexOf(str) >= 0;
 };
 
-const isMatch = (threadValues: string, thread: Thread, parseResultOrString: ParseResult | string): boolean => {
+const isMatch = (threadValues: string, thread: JStackThread, parseResultOrString: ParseResult | string): boolean => {
     if ((parseResultOrString as ParseResult).op) {
         const parseResult = parseResultOrString as ParseResult;
         switch (parseResult.op) {
@@ -111,7 +111,7 @@ const isMatch = (threadValues: string, thread: Thread, parseResultOrString: Pars
 
 onmessage = e => {
     const data: SearchWorkerRequestMessage = e.data;
-    const threads: Thread[] = data.threads;
+    const threads: JStackThread[] = data.threads;
     const searchString: string = data.searchString;
 
     try {

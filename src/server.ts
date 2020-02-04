@@ -1,9 +1,7 @@
 import express, { Request, Response } from 'express';
 import { NextFunction } from 'express-serve-static-core';
-import { parseJps } from 'jps-parser/target';
-import { parseJStack } from 'jstack-parser/target';
 import path from 'path';
-import { execPromise } from './utils';
+import { jps, jstack } from 'java-process-information';
 
 export interface StartOptions {
     port: number;
@@ -17,7 +15,7 @@ export function start(options: StartOptions) {
     const app = express();
 
     app.use('/processes', getProcesses);
-    app.use('/process/:pid', getProcessDetails);
+    app.use('/process/:pid/threads', getProcessThreads);
     app.use('/', express.static(path.resolve(__dirname, '..', 'public', 'resources')));
     app.use(express.static(path.resolve(__dirname, '..', 'public', 'target')));
 
@@ -36,20 +34,25 @@ export function start(options: StartOptions) {
 
     async function getProcesses(req: Request, res: Response, next: NextFunction) {
         try {
-            const rawResults = await execPromise(options.jpsCommand);
-            const results = parseJps(rawResults.stdout, rawResults.stderr);
+            const results = await jps({
+                cmd: options.jpsCommand,
+                outputFullPackageNames: true,
+                outputArguments: true,
+                outputJvmArguments: true
+            });
             res.send(results);
         } catch (err) {
             next(err);
         }
     }
 
-    async function getProcessDetails(req: Request, res: Response, next: NextFunction) {
+    async function getProcessThreads(req: Request, res: Response, next: NextFunction) {
         try {
             const { pid } = req.params;
-            const cmd = options.jstackCommand.replace(/\$pid/, pid);
-            const rawResults = await execPromise(cmd);
-            const results = parseJStack(rawResults.stdout, rawResults.stderr);
+            const results = await jstack({
+                cmd: options.jstackCommand,
+                pid: parseInt(pid)
+            });
             res.send(results);
         } catch (err) {
             if (err.message.indexOf('No such process') >= 0) {

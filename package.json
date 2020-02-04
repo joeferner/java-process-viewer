@@ -24,8 +24,7 @@
   },
   "dependencies": {
     "express": "^4.17.1",
-    "jps-parser": "0.0.2",
-    "jstack-parser": "0.0.4",
+    "java-process-information": "0.0.x",
     "yargs": "^15.1.0"
   },
   "devDependencies": {
