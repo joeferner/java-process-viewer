@@ -36,8 +36,8 @@ export interface ConfigurableTableProps {
     sortColumnId: string;
     sortDirection: SortDirection;
     onSortChange: (sortColumnId: string, sortDirection: SortDirection) => void;
-    onSetColumns: (columns: Column[]) => void;
-    renderDetails: (row: any) => any;
+    onSetColumns?: (columns: Column[]) => void;
+    renderDetails?: (row: any) => any;
 }
 
 const defaultSort = (a: any, b: any) => {
@@ -93,18 +93,20 @@ function _ConfigurableTable(props: ConfigurableTableProps) {
     const filteredColumns = props.columns.filter(column => ('visible' in column ? column.visible : true));
     return (
         <Paper className={props.className}>
-            <ColumnConfigDialog
-                onClose={() => setShowColumnsConfig(false)}
-                open={showColumnsConfig}
-                columns={props.columns}
-                onColumnsChange={newColumns => props.onSetColumns(newColumns)}
-            />
+            {props.onSetColumns ? (
+                <ColumnConfigDialog
+                    onClose={() => setShowColumnsConfig(false)}
+                    open={showColumnsConfig}
+                    columns={props.columns}
+                    onColumnsChange={newColumns => (props.onSetColumns || (c => {}))(newColumns)}
+                />
+            ) : null}
 
             <TableContainer className={props.containerClassName}>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead>
                         <TableRow>
-                            <TableCell className={classes.tableHeaderCell} />
+                            {props.renderDetails ? <TableCell className={classes.tableHeaderCell} /> : null}
                             {filteredColumns.map(column => (
                                 <TableCell
                                     key={column.id}
@@ -122,22 +124,26 @@ function _ConfigurableTable(props: ConfigurableTableProps) {
                                         {column.label}
                                         {props.sortColumnId === column.id ? (
                                             props.sortDirection === SortDirection.ASCENDING ? (
-                                                <ArrowDropDownIcon />
-                                            ) : (
                                                 <ArrowDropUpIcon />
+                                            ) : (
+                                                <ArrowDropDownIcon />
                                             )
                                         ) : null}
                                     </div>
                                 </TableCell>
                             ))}
-                            <TableCell className={clsx(classes.tableHeaderCell, classes.tableHeaderCellConfigColumns)}>
-                                <IconButton
-                                    className={classes.tableHeaderCellConfigColumnsButton}
-                                    onClick={() => setShowColumnsConfig(true)}
+                            {props.onSetColumns ? (
+                                <TableCell
+                                    className={clsx(classes.tableHeaderCell, classes.tableHeaderCellConfigColumns)}
                                 >
-                                    <ViewColumnIcon color="primary" style={{ color: '#eee' }} />
-                                </IconButton>
-                            </TableCell>
+                                    <IconButton
+                                        className={classes.tableHeaderCellConfigColumnsButton}
+                                        onClick={() => setShowColumnsConfig(true)}
+                                    >
+                                        <ViewColumnIcon color="primary" style={{ color: '#eee' }} />
+                                    </IconButton>
+                                </TableCell>
+                            ) : null}
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -147,7 +153,8 @@ function _ConfigurableTable(props: ConfigurableTableProps) {
                                     key={row.id}
                                     row={row}
                                     columns={filteredColumns}
-                                    renderDetails={r => props.renderDetails(r)}
+                                    renderDetails={props.renderDetails}
+                                    configurableColumns={!!props.onSetColumns}
                                 />
                             );
                         })}

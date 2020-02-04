@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { JpsProcess, JStackParseResults } from 'java-process-information';
+import { JMapParseResults, JpsProcess, JStackParseResults } from 'java-process-information';
 
 export interface ProcessListResults {
     processes: JpsProcess[];
@@ -19,4 +19,12 @@ export async function getProcessThreads(pid: number): Promise<JStackParseResults
         return ret.data;
     }
     throw new Error(`Could not get process details (pid: ${pid}): ${ret.status}`);
+}
+
+export async function getProcessMemory(pid: number): Promise<JMapParseResults> {
+    const ret = await axios.get(`/process/${pid}/memory`);
+    if (ret.status === 200) {
+        return ret.data;
+    }
+    throw new Error(`Could not get memory (pid: ${pid}): ${ret.status}`);
 }

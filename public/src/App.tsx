@@ -4,6 +4,7 @@ import { Threads } from './Threads';
 import { ProcessList } from './ProcessList';
 import { AppContext } from './AppContext';
 import { AppBar } from './AppBar';
+import { Memory } from './Memory';
 
 let refreshTimeout: any | undefined = undefined;
 
@@ -65,6 +66,7 @@ export function App() {
                 />
                 <Switch>
                     <Route path="/pid/:pid/threads" component={Threads} />
+                    <Route path="/pid/:pid/memory" component={Memory} />
                     <Route component={ProcessList} />
                 </Switch>
             </AppContext.Provider>

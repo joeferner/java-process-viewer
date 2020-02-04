@@ -1,12 +1,13 @@
 import express, { Request, Response } from 'express';
 import { NextFunction } from 'express-serve-static-core';
 import path from 'path';
-import { jps, jstack } from 'java-process-information';
+import { jps, jstack, jmapHisto } from 'java-process-information';
 
 export interface StartOptions {
     port: number;
     jpsCommand: string;
     jstackCommand: string;
+    jmapCommand: string;
 }
 
 export function start(options: StartOptions) {
@@ -16,6 +17,7 @@ export function start(options: StartOptions) {
 
     app.use('/processes', getProcesses);
     app.use('/process/:pid/threads', getProcessThreads);
+    app.use('/process/:pid/memory', getProcessMemory);
     app.use('/', express.static(path.resolve(__dirname, '..', 'public', 'resources')));
     app.use(express.static(path.resolve(__dirname, '..', 'public', 'target')));
 
@@ -53,6 +55,25 @@ export function start(options: StartOptions) {
                 cmd: options.jstackCommand,
                 pid: parseInt(pid)
             });
+            res.send(results);
+        } catch (err) {
+            if (err.message.indexOf('No such process') >= 0) {
+                res.sendStatus(404);
+                res.send('');
+                return;
+            }
+            next(err);
+        }
+    }
+
+    async function getProcessMemory(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { pid, from, to } = req.params;
+            const results = await jmapHisto({
+                cmd: options.jmapCommand,
+                pid: parseInt(pid)
+            });
+            results.objects = results.objects.slice(parseInt(from || '0'), parseInt(to || '500'));
             res.send(results);
         } catch (err) {
             if (err.message.indexOf('No such process') >= 0) {

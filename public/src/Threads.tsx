@@ -3,7 +3,7 @@ import { JStackParseResults } from 'java-process-information';
 import React, { useEffect } from 'react';
 // @ts-ignore
 import SearchWorker from 'worker-loader!./worker/search';
-import { Column } from './components/common/Column';
+import { Column, numberColumn } from './components/common/Column';
 import { ConfigurableTable, SortDirection } from './components/common/ConfigurableTable';
 import { SearchTextBox } from './components/SearchTextBox';
 import { getProcessThreads } from './data';
@@ -39,11 +39,11 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const initialColumns: Column[] = [
-    { id: 'javaThreadId', label: 'ID', minWidth: 20 },
+    { ...numberColumn, id: 'javaThreadId', label: 'ID', minWidth: 20 },
     { id: 'state', label: 'State', minWidth: 100 },
     { id: 'name', label: 'Name', minWidth: 200 },
-    { id: 'osPriority', label: 'OS Priority', minWidth: 20, visible: false },
-    { id: 'priority', label: 'Priority', minWidth: 20, visible: false },
+    { ...numberColumn, id: 'osPriority', label: 'OS Priority', minWidth: 20, visible: false },
+    { ...numberColumn, id: 'priority', label: 'Priority', minWidth: 20, visible: false },
     { id: 'tid', label: 'TID', minWidth: 150, visible: false },
     { id: 'nid', label: 'NID', minWidth: 20, visible: false },
     { id: 'stackMemoryRegion', label: 'Stack Memory Region', minWidth: 50, visible: false },

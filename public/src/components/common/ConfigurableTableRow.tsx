@@ -27,7 +27,8 @@ const useStyles = makeStyles(theme => ({
 export interface ConfigurableTableRowProps {
     row: any;
     columns: Column[];
-    renderDetails: (row: any) => any;
+    renderDetails?: (row: any) => any;
+    configurableColumns: boolean;
 }
 
 const mouseDownLocation = {
@@ -102,11 +103,13 @@ export function ConfigurableTableRow(props: ConfigurableTableRowProps) {
             onMouseDown={handleRowMouseDown}
             onMouseUp={handleRowMouseUp}
         >
-            <TableCell>
-                <IconButton color="primary" className={classes.detailsButton} onClick={handleRowDetailsButtonClick}>
-                    <ChevronRightIcon className={detailsIconClassName} />
-                </IconButton>
-            </TableCell>
+            {props.renderDetails ? (
+                <TableCell>
+                    <IconButton color="primary" className={classes.detailsButton} onClick={handleRowDetailsButtonClick}>
+                        <ChevronRightIcon className={detailsIconClassName} />
+                    </IconButton>
+                </TableCell>
+            ) : null}
             {props.columns.map(column => {
                 const value = props.row[column.id];
                 return (
@@ -115,11 +118,11 @@ export function ConfigurableTableRow(props: ConfigurableTableRowProps) {
                     </TableCell>
                 );
             })}
-            <TableCell />
+            {props.configurableColumns ? <TableCell /> : null}
         </TableRow>,
     ];
 
-    if (showRowDetails) {
+    if (showRowDetails && props.renderDetails) {
         results.push(
             <TableRow key="details">
                 <TableCell className={classes.detailsCell} colSpan={props.columns.length + 2}>
